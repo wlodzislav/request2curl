@@ -1,10 +1,12 @@
 var assert = require("assert");
-var request2curl = require("./index");
+var fs = require("fs");
+var path = require("path");
+var request2curl = require("../index");
 
 it("single string url", function () {
 	var options = "https://example.com";
 	var expected = "curl 'https://example.com'";
-	assert.equal(request2curl(options), expected);
+	assert.equal(expected, request2curl(options));
 });
 
 it("request.defaults", function () {
@@ -24,7 +26,7 @@ describe("Options", function () {
 			uri: "https://example.com",
 		};
 		var expected = "curl 'https://example.com'";
-		assert.equal(request2curl(options), expected);
+		assert.equal(expected, request2curl(options));
 	});
 
 	it("url", function () {
@@ -32,7 +34,7 @@ describe("Options", function () {
 			url: "https://example.com",
 		};
 		var expected = "curl 'https://example.com'";
-		assert.equal(request2curl(options), expected);
+		assert.equal(expected, request2curl(options));
 	});
 
 	describe("baseUrl", function () {
@@ -42,7 +44,7 @@ describe("Options", function () {
 				url: "/a"
 			};
 			var expected = "curl 'https://example.com/a'";
-			assert.equal(request2curl(options), expected);
+			assert.equal(expected, request2curl(options));
 		});
 
 		it("baseUrl + /url", function () {
@@ -51,7 +53,7 @@ describe("Options", function () {
 				url: "/a"
 			};
 			var expected = "curl 'https://example.com/a'";
-			assert.equal(request2curl(options), expected);
+			assert.equal(expected, request2curl(options));
 		});
 
 		it("baseUrl/ + url", function () {
@@ -60,7 +62,7 @@ describe("Options", function () {
 				url: "a"
 			};
 			var expected = "curl 'https://example.com/a'";
-			assert.equal(request2curl(options), expected);
+			assert.equal(expected, request2curl(options));
 		});
 
 		it("baseUrl + url", function () {
@@ -69,7 +71,7 @@ describe("Options", function () {
 				url: "a"
 			};
 			var expected = "curl 'https://example.com/a'";
-			assert.equal(request2curl(options), expected);
+			assert.equal(expected, request2curl(options));
 		});
 	});
 
@@ -79,7 +81,7 @@ describe("Options", function () {
 			method: "POST"
 		};
 		var expected = "curl -X POST 'https://example.com'";
-		assert.equal(request2curl(options), expected);
+		assert.equal(expected, request2curl(options));
 	});
 
 	it("headers", function () {
@@ -90,7 +92,7 @@ describe("Options", function () {
 			}
 		};
 		var expected = "curl 'https://example.com' -H 'User-Agent:request'";
-		assert.equal(request2curl(options), expected);
+		assert.equal(expected, request2curl(options));
 	});
 
 	it("qs", function () {
@@ -99,7 +101,7 @@ describe("Options", function () {
 			qs: { a: [1,2], b: "text" }
 		};
 		var expected = "curl 'https://example.com?a%5B0%5D=1&a%5B1%5D=2&b=text'";
-		assert.equal(request2curl(options), expected);
+		assert.equal(expected, request2curl(options));
 	});
 
 	it("qsParseOptions");
@@ -113,7 +115,7 @@ describe("Options", function () {
 				body: "text"
 			};
 			var expected = "curl 'https://example.com' --data 'text'";
-			assert.equal(request2curl(options), expected);
+			assert.equal(expected, request2curl(options));
 		});
 
 		it("json serializable", function () {
@@ -123,12 +125,12 @@ describe("Options", function () {
 				json: true
 			};
 			var expected = "curl 'https://example.com' --data '{\"a\":1,\"b\":2}' -H 'accept:application/json' -H 'content-type:application/json'";
-			assert.equal(request2curl(options), expected);
+			assert.equal(expected, request2curl(options));
 		});
 
 		it("json serializable + overwrite headers", function () {
 			var options = {
-				url: "https://example.com",
+				url: "http://example.com",
 				body: { a: 1, b: 2 },
 				headers: {
 					"accept": "application/json1",
@@ -136,44 +138,79 @@ describe("Options", function () {
 				},
 				json: true
 			};
-			var expected = "curl 'https://example.com' --data '{\"a\":1,\"b\":2}' -H 'accept:application/json1' -H 'content-type:application/json1'";
-			assert.equal(request2curl(options), expected);
+			var expected = "curl 'http://example.com' --data '{\"a\":1,\"b\":2}' -H 'accept:application/json1' -H 'content-type:application/json1'";
+			assert.equal(expected, request2curl(options));
 		});
 
 		it("Buffer", function () {
 			var options = {
-				url: "https://example.com",
+				url: "http://example.com",
 				body: Buffer.from("text")
 			};
-			var expected = "curl 'https://example.com' --data 'text'";
-			assert.equal(request2curl(options), expected);
+			var expected = "curl 'http://example.com' --data 'text'";
+			assert.equal(expected, request2curl(options));
 		});
 
 		it("escape '", function () {
 			var options = {
-				url: "https://example.com",
+				url: "http://example.com",
 				body: { a: "'a'", b: 2 },
 				json: true
 			};
-			var expected = `curl 'https://example.com' --data '{"a":"'"'"'a'"'"'","b":2}' -H 'accept:application/json' -H 'content-type:application/json'`;
-			assert.equal(request2curl(options), expected);
+			var expected = `curl 'http://example.com' --data '{"a":"'"'"'a'"'"'","b":2}' -H 'accept:application/json' -H 'content-type:application/json'`;
+			assert.equal(expected, request2curl(options));
 		});
 
 	});
 
-	it("form");
-	it("formData");
+	it("form", function () {
+		var options = {
+			url: "http://example.com",
+			form: { a: 1, b: 2 }
+		};
+		var expected = "curl 'http://example.com' --data 'a=1&b=2' -H 'content-type:application/x-www-form-urlencoded'";
+		assert.equal(expected, request2curl(options));
+	});
+
+	it("formData", function () {
+		function fakePath(stream) {
+			stream.path = "/home/example/" + path.basename(stream.path);
+			return stream;
+		}
+		var options = {
+			url: "http://example.com",
+			formData: {
+				field: "value",
+				array: [1,2],
+				file: fakePath(fs.createReadStream(__dirname + "/attachment1.png")),
+				attachments: [
+					fakePath(fs.createReadStream(__dirname + "/attachment2.png")),
+					fakePath(fs.createReadStream(__dirname + "/attachment3.png"))
+				],
+				custom: {
+					value:  fakePath(fs.createReadStream(__dirname + "/attachment4.png")),
+					options: {
+						filename: "custom.png",
+						contentType: "image/custom"
+					}
+				}
+			},
+		};
+		var expected = "curl 'http://example.com' -F 'field=value' -F 'array=1' -F 'array=2' -F 'file=@/home/example/attachment1.png' -F 'attachments=@/home/example/attachment2.png' -F 'attachments=@/home/example/attachment3.png' -F 'custom=@/home/example/attachment4.png;filename=custom.png;type=image/custom'";
+		assert.equal(expected, request2curl(options));
+	});
+
 	it("multipart");
 	it("preampleCRLF");
 	it("postambleCRLF");
 
 	it("json without body", function () {
 		var options = {
-			url: "https://example.com",
+			url: "http://example.com",
 			json: true
 		};
-		var expected = "curl 'https://example.com' -H 'accept:application/json'";
-		assert.equal(request2curl(options), expected);
+		var expected = "curl 'http://example.com' -H 'accept:application/json'";
+		assert.equal(expected, request2curl(options));
 	});
 
 	it("auth");

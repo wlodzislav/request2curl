@@ -1,6 +1,31 @@
+var fs = require("fs");
+var path = require("path");
 var qs = require("qs");
 var extend = require("extend");
 var jsonSafeStringify = require("json-stringify-safe");
+
+// escape ' for shell
+function escapeQuote(s) {
+	return s.replace(/'/g, "'\"'\"'");
+}
+
+function formDataField(key, value) {
+	if (value instanceof fs.ReadStream) {
+		return " -F '" + key + "=@" + escapeQuote(value.path) + "'";
+	} else if (value.options) {
+		var c =  " -F '" + key + "=@" + escapeQuote(value.value.path);
+		if (value.options.filename) {
+			c += ";filename=" + escapeQuote(value.options.filename);
+		}
+		if (value.options.contentType) {
+			c += ";type=" + escapeQuote(value.options.contentType);
+		}
+		c += "'";
+		return c;
+	} else {
+		return " -F '" + key + "=" + value + "'";
+	}
+}
 
 function request2curl(options, defaults) {
 	var curl = "curl";
@@ -37,14 +62,6 @@ function request2curl(options, defaults) {
 		curl += " '" + uri + "'";
 	}
 
-	if (options.form) {
-		if (!options.headers["content-type"]) {
-		  options.headers["content-type"] = "application/x-www-form-urlencoded";
-		}
-		var data = (typeof(options.form) == "string") ? options.form : qs.stringify(options.form);
-		curl += " --data '" + data + "'";
-	}
-
 	var data = "";
 	if (options.body) {
 		if (typeof(options.body) == "string") {
@@ -54,8 +71,35 @@ function request2curl(options, defaults) {
 		} else {
 			data = jsonSafeStringify(options.body);
 		}
-		data = data.replace(/'/g, "'\"'\"'");
+		curl += " --data '" + escapeQuote(data) + "'";
+	}
+
+	if (options.json && !options.headers["accept"]) {
+		options.headers["accept"] = "application/json";
+	}
+
+	if (options.json && options.body && !options.headers["content-type"]) {
+		options.headers["content-type"] = "application/json";
+	}
+
+	if (options.form) {
+		// always overwrite header
+		options.headers["content-type"] = "application/x-www-form-urlencoded";
+		var data = (typeof(options.form) == "string") ? options.form : qs.stringify(options.form);
 		curl += " --data '" + data + "'";
+	}
+
+	if (options.formData) {
+		for (var key in options.formData) {
+			var value = options.formData[key];
+			if (Array.isArray(value)) {
+				value.forEach(function (v) {
+					curl += formDataField(key, v);
+				});
+			} else {
+				curl += formDataField(key, value);
+			}
+		}
 	}
 
 	if (options.followAllRedirects) {
@@ -68,14 +112,6 @@ function request2curl(options, defaults) {
 
 	if (options.proxy) {
 		curl += " --proxy " + options.proxy;
-	}
-
-	if (options.json && !options.headers["accept"]) {
-		options.headers["accept"] = "application/json";
-	}
-
-	if (options.json && options.body && !options.headers["content-type"]) {
-		options.headers["content-type"] = "application/json";
 	}
 
 	if (Object.keys(options.headers).length) {
