@@ -49,5 +49,7 @@ server.listen(8080);
 
 request({
 	uri: "http://localhost:8080",
-	method: "POST"
+	headers: {
+		"User-Agent": "request"
+	}
 });

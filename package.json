@@ -17,6 +17,7 @@
   "author": "Vladislav Kaminsky <wlodzislav@ya.ru>",
   "license": "MIT",
   "dependencies": {
+    "extend": "^3.0.2",
     "qs": "^6.6.0"
   },
   "devDependencies": {

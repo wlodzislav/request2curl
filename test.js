@@ -73,8 +73,26 @@ describe("Options", function () {
 		});
 	});
 
-	it("method");
-	it("headers");
+	it("method", function () {
+		var options = {
+			url: "https://example.com",
+			method: "POST"
+		};
+		var expected = "curl -X POST 'https://example.com'";
+		assert.equal(request2curl(options), expected);
+	});
+
+	it("headers", function () {
+		var options = {
+			url: "https://example.com",
+			headers: {
+				"User-Agent": "request"
+			}
+		};
+		var expected = "curl 'https://example.com' -H 'User-Agent:request'";
+		assert.equal(request2curl(options), expected);
+	});
+
 	it("qs");
 	it("qsParseOptions");
 	it("qsStringifyOptions");

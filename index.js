@@ -1,4 +1,5 @@
 var qs = require("qs");
+var extend = require("extend");
 
 function request2curl(options, defaults) {
 	var curl = "curl";
@@ -7,8 +8,12 @@ function request2curl(options, defaults) {
 		options = { uri: options };
 	}
 
+	if (!options.headers) {
+		options.headers = {};
+	}
+
 	if (defaults) {
-		Object.assign(options, defaults);
+    	extend(true, options, defaults);
 	}
 
 	if (options.method) {
@@ -32,26 +37,36 @@ function request2curl(options, defaults) {
 	}
 
 	if (options.form) {
-		curl += " --data '" + querystring.stringify(options.form) + "'";
+		if (!options.headers["content-type"]) {
+		  options.headers["content-type"] = "application/x-www-form-urlencoded";
+		}
+		var data = (typeof(options.form) == "string") ? options.form : qs.stringify(options.form);
+		curl += " --data '" + data + "'";
 	}
+
 	if (options.body) {
 		curl += " --data '" + options.body + "'";
 	}
+
 	if (options.followAllRedirects) {
 		curl += " -v --location";
 	}
+
 	if (options.auth) {
 		curl += " --user " + options.auth.user + ":" + options.auth.pass;
 	}
+
 	if (options.proxy) {
 		curl += " --proxy " + options.proxy;
 	}
-	if (options.headers) {
+
+	if (Object.keys(options.headers).length) {
 		for (var headerName in options.headers) {
 			var headersValue = options.headers[headerName];
 			curl += " -H '" + headerName + ":" + headersValue + "'";
 		}
 	}
+
 	return curl;
 }
 
