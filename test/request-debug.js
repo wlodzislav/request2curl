@@ -184,3 +184,8 @@ request({
 }, function (err, res, body) {
 	console.log({body});
 });
+
+request({
+	uri: "http://localhost:8080/7",
+	gzip: true
+});

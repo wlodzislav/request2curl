@@ -116,9 +116,6 @@ function request2curl(options, defaults) {
 		}
 	}
 
-	if (options.followRedirect || !("followRedirect" in options) || options.followAllRedirects) {
-	}
-
 	if (options.auth && options.auth.user) {
 		curl += " --user " + options.auth.user + ":" + options.auth.pass;
 	}
@@ -126,6 +123,15 @@ function request2curl(options, defaults) {
 	if (options.auth && options.auth.bearer) {
 		curl += " -H 'authorization: Bearer " + options.auth.bearer + "'";
 	}
+
+	if (options.gzip) {
+		curl += " -H 'accept-encoding: gzip, deflate'";
+	}
+
+	if (("forever" in options) && !options.forever) {
+		curl += " --no-keepalive";
+	}
+
 
 	if (options.proxy) {
 		curl += " --proxy " + options.proxy;

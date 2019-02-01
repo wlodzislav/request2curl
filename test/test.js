@@ -260,7 +260,6 @@ describe("Options", function () {
 		assert.equal(request2curl(options), expected);
 	});
 
-	it("followOriginalHTTPMethod");
 	it("maxRedirects", function () {
 		var options = {
 			url: "http://example.com",
@@ -269,14 +268,33 @@ describe("Options", function () {
 		var expected = "curl 'http://example.com' --location --max-redirs 20";
 		assert.equal(request2curl(options), expected);
 	});
+
 	it("removeRefererHeader");
 	it("encoding");
-	it("gzip");
+
+	it("gzip", function () {
+		var options = {
+			url: "http://example.com",
+			gzip: true
+		};
+		var expected = "curl 'http://example.com' --location --max-redirs 10 -H 'accept-encoding: gzip, deflate'";
+		assert.equal(request2curl(options), expected);
+	});
+
 	it("jar");
 	it("agent");
 	it("agentClass");
 	it("agentOptions");
-	it("forever");
+
+	it("forever", function () {
+		var options = {
+			url: "http://example.com",
+			forever: false
+		};
+		var expected = "curl 'http://example.com' --location --max-redirs 10 --no-keepalive";
+		assert.equal(request2curl(options), expected);
+	});
+
 	it("timeout");
 	it("localAddress");
 	it("proxy");
