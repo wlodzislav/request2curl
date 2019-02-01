@@ -136,6 +136,10 @@ function request2curl(options, defaults) {
 		curl += " --max-time " + (options.timeout / 1000);
 	}
 
+	if (options.localAddress) {
+		curl += " --interface " + options.localAddress;
+	}
+
 	if (options.proxy) {
 		curl += " --proxy " + options.proxy;
 	}

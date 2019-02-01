@@ -304,7 +304,14 @@ describe("Options", function () {
 		assert.equal(request2curl(options), expected);
 	});
 
-	it("localAddress");
+	it("localAddress", function () {
+		var options = {
+			url: "http://example.com",
+			localAddress: "200.1.1.1"
+		};
+		var expected = "curl 'http://example.com' --location --max-redirs 10 --interface 200.1.1.1";
+		assert.equal(request2curl(options), expected);
+	});
 	it("proxy");
 	it("strictSSL");
 	it("tunnel");
