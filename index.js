@@ -107,10 +107,13 @@ function request2curl(options, defaults) {
 	}
 
 	var getMethod = !("method" in options) || options.method.toUpperCase() == "GET";
-	if (options.followAllRedirects) {
+	if (options.followAllRedirects || (options.followRedirect && getMethod)) {
 		curl += " --location";
-	} else if (options.followRedirect && getMethod) {
-		curl += " --location";
+		if ("maxRedirects" in options) {
+			curl += " --max-redirs " + options.maxRedirects;
+		} else {
+			curl += " --max-redirs 10";
+		}
 	}
 
 	if (options.followRedirect || !("followRedirect" in options) || options.followAllRedirects) {
