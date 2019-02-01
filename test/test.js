@@ -309,10 +309,19 @@ describe("Options", function () {
 			url: "http://example.com",
 			localAddress: "200.1.1.1"
 		};
-		var expected = "curl 'http://example.com' --location --max-redirs 10 --interface 200.1.1.1";
+		var expected = "curl 'http://example.com' --location --max-redirs 10 --interface '200.1.1.1'";
 		assert.equal(request2curl(options), expected);
 	});
-	it("proxy");
+
+	it("proxy", function () {
+		var options = {
+			url: "http://example.com",
+			proxy: "http://user:pass@example.com:8080"
+		};
+		var expected = "curl 'http://example.com' --location --max-redirs 10 --proxy 'http://user:pass@example.com:8080'";
+		assert.equal(request2curl(options), expected);
+	});
+
 	it("strictSSL");
 	it("tunnel");
 	it("proxyHeaderWhiteList");

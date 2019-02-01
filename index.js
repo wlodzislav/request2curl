@@ -137,11 +137,11 @@ function request2curl(options, defaults) {
 	}
 
 	if (options.localAddress) {
-		curl += " --interface " + options.localAddress;
+		curl += " --interface '" + options.localAddress + "'";
 	}
 
 	if (options.proxy) {
-		curl += " --proxy " + options.proxy;
+		curl += " --proxy '" + options.proxy + "'";
 	}
 
 	if (Object.keys(options.headers).length) {
