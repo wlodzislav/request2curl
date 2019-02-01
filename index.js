@@ -1,5 +1,6 @@
 var qs = require("qs");
 var extend = require("extend");
+var jsonSafeStringify = require("json-stringify-safe");
 
 function request2curl(options, defaults) {
 	var curl = "curl";
@@ -44,8 +45,17 @@ function request2curl(options, defaults) {
 		curl += " --data '" + data + "'";
 	}
 
+	var data = "";
 	if (options.body) {
-		curl += " --data '" + options.body + "'";
+		if (typeof(options.body) == "string") {
+			data = options.body;
+		} else if (options.body instanceof Buffer) {
+			data = options.body.toString();
+		} else {
+			data = jsonSafeStringify(options.body);
+		}
+		data = data.replace(/'/g, "'\"'\"'");
+		curl += " --data '" + data + "'";
 	}
 
 	if (options.followAllRedirects) {
@@ -58,6 +68,14 @@ function request2curl(options, defaults) {
 
 	if (options.proxy) {
 		curl += " --proxy " + options.proxy;
+	}
+
+	if (options.json && !options.headers["accept"]) {
+		options.headers["accept"] = "application/json";
+	}
+
+	if (options.json && options.body && !options.headers["content-type"]) {
+		options.headers["content-type"] = "application/json";
 	}
 
 	if (Object.keys(options.headers).length) {

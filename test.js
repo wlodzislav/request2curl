@@ -101,16 +101,81 @@ describe("Options", function () {
 		var expected = "curl 'https://example.com?a%5B0%5D=1&a%5B1%5D=2&b=text'";
 		assert.equal(request2curl(options), expected);
 	});
+
 	it("qsParseOptions");
 	it("qsStringifyOptions");
 	it("useQuerystring");
-	it("body");
+
+	describe("body", function () {
+		it("string", function () {
+			var options = {
+				url: "https://example.com",
+				body: "text"
+			};
+			var expected = "curl 'https://example.com' --data 'text'";
+			assert.equal(request2curl(options), expected);
+		});
+
+		it("json serializable", function () {
+			var options = {
+				url: "https://example.com",
+				body: { a: 1, b: 2 },
+				json: true
+			};
+			var expected = "curl 'https://example.com' --data '{\"a\":1,\"b\":2}' -H 'accept:application/json' -H 'content-type:application/json'";
+			assert.equal(request2curl(options), expected);
+		});
+
+		it("json serializable + overwrite headers", function () {
+			var options = {
+				url: "https://example.com",
+				body: { a: 1, b: 2 },
+				headers: {
+					"accept": "application/json1",
+					"content-type": "application/json1"
+				},
+				json: true
+			};
+			var expected = "curl 'https://example.com' --data '{\"a\":1,\"b\":2}' -H 'accept:application/json1' -H 'content-type:application/json1'";
+			assert.equal(request2curl(options), expected);
+		});
+
+		it("Buffer", function () {
+			var options = {
+				url: "https://example.com",
+				body: Buffer.from("text")
+			};
+			var expected = "curl 'https://example.com' --data 'text'";
+			assert.equal(request2curl(options), expected);
+		});
+
+		it("escape '", function () {
+			var options = {
+				url: "https://example.com",
+				body: { a: "'a'", b: 2 },
+				json: true
+			};
+			var expected = `curl 'https://example.com' --data '{"a":"'"'"'a'"'"'","b":2}' -H 'accept:application/json' -H 'content-type:application/json'`;
+			assert.equal(request2curl(options), expected);
+		});
+
+	});
+
 	it("form");
 	it("formData");
 	it("multipart");
 	it("preampleCRLF");
 	it("postambleCRLF");
-	it("json");
+
+	it("json without body", function () {
+		var options = {
+			url: "https://example.com",
+			json: true
+		};
+		var expected = "curl 'https://example.com' -H 'accept:application/json'";
+		assert.equal(request2curl(options), expected);
+	});
+
 	it("auth");
 	it("oauth");
 	it("hawk");
