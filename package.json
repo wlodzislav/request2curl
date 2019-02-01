@@ -1,6 +1,6 @@
 {
   "name": "request2curl",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Convert request(...) options to curl without executing the request",
   "keywords": [
     "request",
