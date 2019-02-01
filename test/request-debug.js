@@ -68,6 +68,18 @@ app.get("/", function (req, res) {
 	res.send("");
 });
 
+app.get("/redirect", function (req, res) {
+	res.redirect(301, '/redirected')
+});
+
+app.post("/redirect", function (req, res) {
+	res.redirect(301, '/redirected')
+});
+
+app.get("/redirected", function (req, res) {
+	res.send("redirected");
+});
+
 app.listen(8080);
 
 console.log("========================");
@@ -162,4 +174,13 @@ request({
 	"auth": {
 		"bearer": "token111"
 	}
+});
+
+request({
+	uri: "http://localhost:8080/redirect",
+	method: "POST",
+	//followRedirect: false,
+	followAllRedirects: true,
+}, function (err, res, body) {
+	console.log({body});
 });

@@ -38,6 +38,10 @@ function request2curl(options, defaults) {
 		options.headers = {};
 	}
 
+	if (!("followRedirect" in options)) {
+		options.followRedirect = true;
+	}
+
 	if (defaults) {
     	extend(true, options, defaults);
 	}
@@ -102,8 +106,14 @@ function request2curl(options, defaults) {
 		}
 	}
 
+	var getMethod = !("method" in options) || options.method.toUpperCase() == "GET";
 	if (options.followAllRedirects) {
-		curl += " -v --location";
+		curl += " --location";
+	} else if (options.followRedirect && getMethod) {
+		curl += " --location";
+	}
+
+	if (options.followRedirect || !("followRedirect" in options) || options.followAllRedirects) {
 	}
 
 	if (options.auth && options.auth.user) {
