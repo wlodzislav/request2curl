@@ -16,7 +16,9 @@
   "repository": "git://github.com/wlodzislav/request2curl.git",
   "author": "Vladislav Kaminsky <wlodzislav@ya.ru>",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "qs": "^6.6.0"
+  },
   "devDependencies": {
     "mocha": "^5.2.0",
     "request": "^2.88.0"

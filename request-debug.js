@@ -9,3 +9,13 @@ server.listen(8080);
 request("http://localhost:8080");
 request({ url: "http://localhost:8080" });
 request({ uri: "http://localhost:8080" });
+
+request({
+	baseUrl: "https://localhost:8080",
+	url: "/a"
+});
+
+request({
+	baseUrl: "https://localhost:8080",
+	url: "a"
+});

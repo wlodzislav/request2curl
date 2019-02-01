@@ -1,24 +1,34 @@
-function request2curl(options) {
+var qs = require("qs");
+
+function request2curl(options, defaults) {
 	var curl = "curl";
 
 	if (typeof(options) == "string") {
-		curl += " '" + options + "'";
-		return curl;
+		options = { uri: options };
+	}
+
+	if (defaults) {
+		Object.assign(options, defaults);
 	}
 
 	if (options.method) {
 		curl += " -X " + options.method;
 	}
-	
-	var url = "";
-	if (options.url || options.uri) {
-		url = options.url || options.uri;
+
+	if (options.url) {
+		options.uri = options.url;
+	}
+	var uri = "";
+	if (options.baseUrl) {
+		uri = options.baseUrl.replace(/\/$/, "") + "/" + options.uri.replace(/^\//, "");
+	} else {
+		uri = options.uri;
 	}
 
 	if (options.qs) {
-		curl += " '" + url + "?" + querystring.stringify(options.qs) + "'";
+		curl += " '" + uri + "?" + qs.stringify(options.qs) + "'";
 	} else {
-		curl += " '" + url + "'";
+		curl += " '" + uri + "'";
 	}
 
 	if (options.form) {

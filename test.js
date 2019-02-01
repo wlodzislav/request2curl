@@ -7,7 +7,16 @@ it("single string url", function () {
 	assert.equal(request2curl(options), expected);
 });
 
-it("request.defaults");
+it("request.defaults", function () {
+		var options = {
+			url: "/a"
+		};
+		var defaults = {
+			baseUrl: "https://example.com/",
+		};
+		var expected = "curl 'https://example.com/a'";
+		assert.equal(request2curl(options, defaults), expected);
+	});
 
 describe("Options", function () {
 	it("uri", function () {
@@ -26,7 +35,44 @@ describe("Options", function () {
 		assert.equal(request2curl(options), expected);
 	});
 
-	it("baseUrl");
+	describe("baseUrl", function () {
+		it("baseUrl/ + /url", function () {
+			var options = {
+				baseUrl: "https://example.com/",
+				url: "/a"
+			};
+			var expected = "curl 'https://example.com/a'";
+			assert.equal(request2curl(options), expected);
+		});
+
+		it("baseUrl + /url", function () {
+			var options = {
+				baseUrl: "https://example.com",
+				url: "/a"
+			};
+			var expected = "curl 'https://example.com/a'";
+			assert.equal(request2curl(options), expected);
+		});
+
+		it("baseUrl/ + url", function () {
+			var options = {
+				baseUrl: "https://example.com/",
+				url: "a"
+			};
+			var expected = "curl 'https://example.com/a'";
+			assert.equal(request2curl(options), expected);
+		});
+
+		it("baseUrl + url", function () {
+			var options = {
+				baseUrl: "https://example.com",
+				url: "a"
+			};
+			var expected = "curl 'https://example.com/a'";
+			assert.equal(request2curl(options), expected);
+		});
+	});
+
 	it("method");
 	it("headers");
 	it("qs");
