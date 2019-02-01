@@ -9,6 +9,9 @@
     "http",
     "logging"
   ],
+  "scripts": {
+    "test": "mocha --colors test.js"
+  },
   "main": "index.js",
   "repository": "git://github.com/wlodzislav/request2curl.git",
   "author": "Vladislav Kaminsky <wlodzislav@ya.ru>",
