@@ -2,8 +2,8 @@ var assert = require("assert");
 var request2curl = require("./index");
 
 it("single string url", function () {
-	var options = "https://github.com";
-	var expected = "curl 'https://github.com'";
+	var options = "https://example.com";
+	var expected = "curl 'https://example.com'";
 	assert.equal(request2curl(options), expected);
 });
 
@@ -12,17 +12,17 @@ it("request.defaults");
 describe("Options", function () {
 	it("uri", function () {
 		var options = {
-			uri: "https://github.com",
+			uri: "https://example.com",
 		};
-		var expected = "curl 'https://github.com'";
+		var expected = "curl 'https://example.com'";
 		assert.equal(request2curl(options), expected);
 	});
 
 	it("url", function () {
 		var options = {
-			url: "https://github.com",
+			url: "https://example.com",
 		};
-		var expected = "curl 'https://github.com'";
+		var expected = "curl 'https://example.com'";
 		assert.equal(request2curl(options), expected);
 	});
 
