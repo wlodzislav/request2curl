@@ -6,7 +6,7 @@ var request2curl = require("../index");
 it("single string url", function () {
 	var options = "https://example.com";
 	var expected = "curl 'https://example.com'";
-	assert.equal(expected, request2curl(options));
+	assert.equal(request2curl(options), expected);
 });
 
 it("request.defaults", function () {
@@ -26,7 +26,7 @@ describe("Options", function () {
 			uri: "https://example.com",
 		};
 		var expected = "curl 'https://example.com'";
-		assert.equal(expected, request2curl(options));
+		assert.equal(request2curl(options), expected);
 	});
 
 	it("url", function () {
@@ -34,7 +34,7 @@ describe("Options", function () {
 			url: "https://example.com",
 		};
 		var expected = "curl 'https://example.com'";
-		assert.equal(expected, request2curl(options));
+		assert.equal(request2curl(options), expected);
 	});
 
 	describe("baseUrl", function () {
@@ -44,7 +44,7 @@ describe("Options", function () {
 				url: "/a"
 			};
 			var expected = "curl 'https://example.com/a'";
-			assert.equal(expected, request2curl(options));
+			assert.equal(request2curl(options), expected);
 		});
 
 		it("baseUrl + /url", function () {
@@ -53,7 +53,7 @@ describe("Options", function () {
 				url: "/a"
 			};
 			var expected = "curl 'https://example.com/a'";
-			assert.equal(expected, request2curl(options));
+			assert.equal(request2curl(options), expected);
 		});
 
 		it("baseUrl/ + url", function () {
@@ -62,7 +62,7 @@ describe("Options", function () {
 				url: "a"
 			};
 			var expected = "curl 'https://example.com/a'";
-			assert.equal(expected, request2curl(options));
+			assert.equal(request2curl(options), expected);
 		});
 
 		it("baseUrl + url", function () {
@@ -71,7 +71,7 @@ describe("Options", function () {
 				url: "a"
 			};
 			var expected = "curl 'https://example.com/a'";
-			assert.equal(expected, request2curl(options));
+			assert.equal(request2curl(options), expected);
 		});
 	});
 
@@ -81,7 +81,7 @@ describe("Options", function () {
 			method: "POST"
 		};
 		var expected = "curl -X POST 'https://example.com'";
-		assert.equal(expected, request2curl(options));
+		assert.equal(request2curl(options), expected);
 	});
 
 	it("headers", function () {
@@ -92,7 +92,7 @@ describe("Options", function () {
 			}
 		};
 		var expected = "curl 'https://example.com' -H 'User-Agent:request'";
-		assert.equal(expected, request2curl(options));
+		assert.equal(request2curl(options), expected);
 	});
 
 	it("qs", function () {
@@ -101,7 +101,7 @@ describe("Options", function () {
 			qs: { a: [1,2], b: "text" }
 		};
 		var expected = "curl 'https://example.com?a%5B0%5D=1&a%5B1%5D=2&b=text'";
-		assert.equal(expected, request2curl(options));
+		assert.equal(request2curl(options), expected);
 	});
 
 	it("qsParseOptions");
@@ -115,7 +115,7 @@ describe("Options", function () {
 				body: "text"
 			};
 			var expected = "curl 'https://example.com' --data 'text'";
-			assert.equal(expected, request2curl(options));
+			assert.equal(request2curl(options), expected);
 		});
 
 		it("json serializable", function () {
@@ -125,7 +125,7 @@ describe("Options", function () {
 				json: true
 			};
 			var expected = "curl 'https://example.com' --data '{\"a\":1,\"b\":2}' -H 'accept:application/json' -H 'content-type:application/json'";
-			assert.equal(expected, request2curl(options));
+			assert.equal(request2curl(options), expected);
 		});
 
 		it("json serializable + overwrite headers", function () {
@@ -139,7 +139,7 @@ describe("Options", function () {
 				json: true
 			};
 			var expected = "curl 'http://example.com' --data '{\"a\":1,\"b\":2}' -H 'accept:application/json1' -H 'content-type:application/json1'";
-			assert.equal(expected, request2curl(options));
+			assert.equal(request2curl(options), expected);
 		});
 
 		it("Buffer", function () {
@@ -148,7 +148,7 @@ describe("Options", function () {
 				body: Buffer.from("text")
 			};
 			var expected = "curl 'http://example.com' --data 'text'";
-			assert.equal(expected, request2curl(options));
+			assert.equal(request2curl(options), expected);
 		});
 
 		it("escape '", function () {
@@ -158,7 +158,7 @@ describe("Options", function () {
 				json: true
 			};
 			var expected = `curl 'http://example.com' --data '{"a":"'"'"'a'"'"'","b":2}' -H 'accept:application/json' -H 'content-type:application/json'`;
-			assert.equal(expected, request2curl(options));
+			assert.equal(request2curl(options), expected);
 		});
 
 	});
@@ -169,7 +169,7 @@ describe("Options", function () {
 			form: { a: 1, b: 2 }
 		};
 		var expected = "curl 'http://example.com' --data 'a=1&b=2' -H 'content-type:application/x-www-form-urlencoded'";
-		assert.equal(expected, request2curl(options));
+		assert.equal(request2curl(options), expected);
 	});
 
 	it("formData", function () {
@@ -197,7 +197,7 @@ describe("Options", function () {
 			},
 		};
 		var expected = "curl 'http://example.com' -F 'field=value' -F 'array=1' -F 'array=2' -F 'file=@/home/example/attachment1.png' -F 'attachments=@/home/example/attachment2.png' -F 'attachments=@/home/example/attachment3.png' -F 'custom=@/home/example/attachment4.png;filename=custom.png;type=image/custom'";
-		assert.equal(expected, request2curl(options));
+		assert.equal(request2curl(options), expected);
 	});
 
 	it("multipart");
@@ -210,10 +210,34 @@ describe("Options", function () {
 			json: true
 		};
 		var expected = "curl 'http://example.com' -H 'accept:application/json'";
-		assert.equal(expected, request2curl(options));
+		assert.equal(request2curl(options), expected);
 	});
 
-	it("auth");
+	describe("auth", function () {
+		it("http basic", function () {
+			var options = {
+				url: "http://example.com",
+				"auth": {
+					"user": "user",
+					"pass": "pass"
+				}
+			};
+			var expected = "curl 'http://example.com' --user user:pass";
+			assert.equal(request2curl(options), expected);
+		});
+
+		it("bearer", function () {
+			var options = {
+				url: "http://example.com",
+				"auth": {
+					"bearer": "token"
+				}
+			};
+			var expected = "curl 'http://example.com' -H 'authorization: Bearer token'";
+			assert.equal(request2curl(options), expected);
+		});
+	});
+
 	it("oauth");
 	it("hawk");
 	it("aws");

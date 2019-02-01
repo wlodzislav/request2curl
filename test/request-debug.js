@@ -43,9 +43,6 @@ http.request = function (options) {
 			data = req._header + data.toString();
 		}
 		body += data.toString();
-		console.log("data>>>")
-		console.log(data);
-		console.log("<<<data");
 	});
 
 
@@ -57,7 +54,6 @@ var app = express();
 app.use(fileUpload());
 
 app.post("/upload", function(req, res) {
-	console.log(req.files);
 	console.log(JSON.stringify(req.body.array), " == [\"1\",\"2\"]");
 	console.log(req.body.field, " == value");
 	console.log(req.files.file.name, " == attachment1.png");
@@ -76,7 +72,6 @@ app.listen(8080);
 
 console.log("========================");
 
-/*
 request({
 	uri: "http://localhost:8080/1",
 	qs: { a: [1,2], b: "text" },
@@ -130,8 +125,6 @@ request({
 	}
 });
 
-*/
-
 request({
 	uri: "http://localhost:8080/upload",
 	method: "POST",
@@ -153,5 +146,20 @@ request({
 	},
 	headers: {
 		"content-type": "application/other"
+	}
+});
+
+request({
+	uri: "http://localhost:8080/6",
+	"auth": {
+		"user": "user",
+		"pass": "pass"
+	}
+});
+
+request({
+	uri: "http://localhost:8080/6.1",
+	"auth": {
+		"bearer": "token111"
 	}
 });

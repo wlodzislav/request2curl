@@ -106,8 +106,12 @@ function request2curl(options, defaults) {
 		curl += " -v --location";
 	}
 
-	if (options.auth) {
+	if (options.auth && options.auth.user) {
 		curl += " --user " + options.auth.user + ":" + options.auth.pass;
+	}
+
+	if (options.auth && options.auth.bearer) {
+		curl += " -H 'authorization: Bearer " + options.auth.bearer + "'";
 	}
 
 	if (options.proxy) {
