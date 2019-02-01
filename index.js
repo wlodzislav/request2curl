@@ -132,6 +132,9 @@ function request2curl(options, defaults) {
 		curl += " --no-keepalive";
 	}
 
+	if (options.timeout) {
+		curl += " --max-time " + (options.timeout / 1000);
+	}
 
 	if (options.proxy) {
 		curl += " --proxy " + options.proxy;

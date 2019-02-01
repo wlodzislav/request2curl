@@ -295,7 +295,15 @@ describe("Options", function () {
 		assert.equal(request2curl(options), expected);
 	});
 
-	it("timeout");
+	it("timeout", function () {
+		var options = {
+			url: "http://example.com",
+			timeout: 2567
+		};
+		var expected = "curl 'http://example.com' --location --max-redirs 10 --max-time 2.567";
+		assert.equal(request2curl(options), expected);
+	});
+
 	it("localAddress");
 	it("proxy");
 	it("strictSSL");
