@@ -49,6 +49,7 @@ server.listen(8080);
 
 request({
 	uri: "http://localhost:8080",
+	qs: { a: [1,2], b: "text" },
 	headers: {
 		"User-Agent": "request"
 	}

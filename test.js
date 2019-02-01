@@ -93,7 +93,14 @@ describe("Options", function () {
 		assert.equal(request2curl(options), expected);
 	});
 
-	it("qs");
+	it("qs", function () {
+		var options = {
+			url: "https://example.com",
+			qs: { a: [1,2], b: "text" }
+		};
+		var expected = "curl 'https://example.com?a%5B0%5D=1&a%5B1%5D=2&b=text'";
+		assert.equal(request2curl(options), expected);
+	});
 	it("qsParseOptions");
 	it("qsStringifyOptions");
 	it("useQuerystring");
